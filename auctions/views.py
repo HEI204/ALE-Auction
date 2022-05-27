@@ -159,7 +159,7 @@ def listing(request, listing_id):
 def make_bid(request, listing_id):
     if request.method == "POST":
         target_listing = Listing.objects.get(pk=listing_id)
-
+    
         # User must login first before make a bid
         if request.user.is_anonymous:
             messages.warning(
@@ -174,10 +174,14 @@ def make_bid(request, listing_id):
 
         new_bid = float(request.POST["new_bid"])
         # Check whether it is within the range
-        if (new_bid > target_listing.current_bid() and new_bid < 99999.99):
+        if (new_bid > target_listing.get_current_bid() and new_bid < 99999.99):
             bid = Bid(auction=target_listing, user=request.user,
                       amount=new_bid, datetime=timezone.now())
             bid.save()
+
+            target_listing.current_bid = new_bid
+            target_listing.save()
+            
             messages.success(
                 request, f"Dear {request.user}, your bid is sucessfully made!")
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
