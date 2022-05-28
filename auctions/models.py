@@ -44,8 +44,8 @@ class Listing(models.Model):
         related_name="listings"
     )
     active = models.BooleanField(default=True)
-    condition_choices = [("New", "Brand New"), ("Used once", "Used once"), ("Used", "Used")]
-    condition = models.CharField(max_length=9, choices=condition_choices, default='New')
+    condition_choices = [("","---------"), ("New", "Brand New"), ("Used once", "Used once"), ("Used", "Used")]
+    condition = models.CharField(max_length=9, choices=condition_choices, default='""')
     start_datetime = models.DateTimeField(default=timezone.now())
     end_datetime = models.DateTimeField(blank=True, null=True)
     starting_bid = models.DecimalField(max_digits=7, decimal_places=2)
