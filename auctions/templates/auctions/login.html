@@ -24,11 +24,11 @@
         <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
             <div class="form-group form-floating">
-                <input autofocus class="form-control" id="floating-username" type="text" name="username" placeholder="Username">
+                <input autofocus class="form-control" id="floating-username" type="text" name="username" placeholder="Username" required>
                 <label for="floating-username">Username</label>
             </div>
             <div class="form-group form-floating">
-                <input class="form-control" id="floating-password" type="password" name="password" placeholder="Password">
+                <input class="form-control" id="floating-password" type="password" name="password" placeholder="Password" required>
                 <label for="floating-password form-control-placeholder">Password</label>
             </div>
             <input class="btn btn-primary" type="submit" value="Login">
