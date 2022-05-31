@@ -31,10 +31,10 @@ class Category(models.Model):
 class Listing(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField(max_length=1000)
-    image = models.ImageField(
+    image = models.URLField(
+        max_length = 1000,
         blank=True,
         null=True,
-        upload_to='auctions/images'
     )
     category = models.ForeignKey(
         Category,
