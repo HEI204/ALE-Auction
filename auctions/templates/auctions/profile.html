@@ -38,7 +38,7 @@
             <h4 class="mt-5 mb-4 ms-3">Listing(s) created</h4>
             {% for listing in user_listing %}   
             <div class="row mx-1 mb-3"> 
-                <img src="{% get_media_prefix %}{{ listing.image }}" class="col-sm-4 listing-image" alt="...">
+                <img src="{{ listing.image }}" class="col-sm-4 listing-image" alt="{{ listing.title }}">
                 <div class="col-sm-8">
                     <h5 class="listing-title">{{ listing.title }}</h5>
                     <hr>
