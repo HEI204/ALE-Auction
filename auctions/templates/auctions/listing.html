@@ -20,10 +20,17 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            {% if 'required_login' in message.extra_tags %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}. <a href="{% url 'login' %}">Please click here login here</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% else %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
         {% endfor %}
     {% endif %}
 
@@ -61,15 +68,19 @@
                     <div class="col-4 bid-header">Current Bid:</div>
                     <div class="col-8 bid-info-detail">
                         {% if target_listing.active %}
-                        <div class="">${{ target_listing.get_current_bid }}</div>
-                        <form class="mb-5 mt-3" action="{% url 'make_bid' target_listing.id %}" method="POST" id="bid" class="mt-4 mb-2">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <input type="number" class="bid-input" step="0.01" name="new_bid" required min="{{ target_listing.current_bid }}" max=99999.99>
-                                <input class="btn btn-primary" type="submit" value="Make Bid">
-                            </div>
-                            <span class="bid-remind">Enter ${{ target_listing.current_bid }} or more</span>
-                        </form>
+                            {% if target_listing.get_current_bid == target_listing.starting_bid %}
+                                <div>No bids</div>
+                            {% else %}
+                                <div>${{ target_listing.get_current_bid }} (From {{ target_listing.get_winner | capfirst }})</div>
+                            {% endif %}
+                            <form class="mb-5 mt-3" action="{% url 'make_bid' target_listing.id %}" method="POST" id="bid" class="mt-4 mb-2">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="number" class="bid-input" step="0.01" name="new_bid" required min="{{ target_listing.current_bid }}" max=99999.99>
+                                    <input class="btn btn-primary" type="submit" value="Make Bid">
+                                </div>
+                                <span class="bid-remind">Enter ${{ target_listing.current_bid }} or more</span>
+                            </form>
                         {% else %}
                         <div class="mb-5">${{ target_listing.get_current_bid }}</div>
                         {% endif %}
@@ -171,9 +182,9 @@
                             <form class="leave-comment-form" action="{% url 'leave_comment' target_listing.id %}" method="post" class="mb-2">
                                 {% csrf_token %}
                                 {% if not comments %}
-                                <textarea name="comment-from-user" rows="2" placeholder="Be the first to comment!"></textarea>
+                                <textarea name="comment-from-user" rows="2" placeholder="Be the first to comment!" required></textarea>
                                 {% else %}
-                                <textarea name="comment-from-user" rows="2" placeholder="Leave your comment if you like!"></textarea>
+                                <textarea name="comment-from-user" rows="2" placeholder="Leave your comment if you like!" required></textarea>
                                 {% endif %}
                                 <input class="btn btn-primary" id="toggle-button" type="submit" name="edit" value="Leave comment">
                             </form>
