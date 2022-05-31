@@ -72,8 +72,8 @@ def profile_view(request, username):
     user = User.objects.get(username=username)
     user_listing = Listing.objects.filter(owner=user)
     return render(request, "auctions/profile.html", {
-        "user" : user,
-        "user_listing" : user_listing
+        "user": user,
+        "user_listing": user_listing
     })
 
 
@@ -100,7 +100,8 @@ def edit_listing(request, listing_id):
     target_listing = Listing.objects.get(pk=listing_id)
 
     if (request.user == target_listing.owner):
-        form = ListingForm(request.POST, request.FILES, instance=target_listing)
+        form = ListingForm(request.POST, request.FILES,
+                           instance=target_listing)
         if request.method == "POST":
             if form.is_valid():
                 listing = form.save()
@@ -116,7 +117,7 @@ def edit_listing(request, listing_id):
         return render(request, "auctions/edit_listing.html", {
             "form": form
         })
-    
+
 
 # Show listing of the category requested by user
 # when the user type ...../categories/<categ>
@@ -159,11 +160,11 @@ def listing(request, listing_id):
 def make_bid(request, listing_id):
     if request.method == "POST":
         target_listing = Listing.objects.get(pk=listing_id)
-    
+
         # User must login first before make a bid
         if request.user.is_anonymous:
             messages.warning(
-                request, f"Sorry, you need to login your account first before make a bid")
+                request, f"Sorry, you need to login your account first before make a bid", extra_tags='required_login')
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
 
         # If user did not type anything
@@ -181,7 +182,7 @@ def make_bid(request, listing_id):
 
             target_listing.current_bid = new_bid
             target_listing.save()
-            
+
             messages.success(
                 request, f"Dear {request.user}, your bid is sucessfully made!")
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
@@ -248,18 +249,27 @@ def listing_owner_setting(request, listing_id):
     return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
 
 # Every user can leave their comments to the listing and display on listing page
+
+
 def leave_comment(request, listing_id):
     if request.method == "POST":
         target_listing = Listing.objects.get(pk=listing_id)
 
+        if request.user.is_anonymous:
+            messages.warning(
+                request, f"Sorry, you need to login your account first before leave a comment", extra_tags='required_login')
+            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
+
         comment_content = request.POST["comment-from-user"]
         if comment_content is None or comment_content == "":
-            messages.warning(request, "You need to type something first before leave a comment!")
+            messages.warning(
+                request, "You need to type something first before leave a comment!")
 
         else:
-            comment = Comment(auction=target_listing, user=request.user, datetime=timezone.now(), content=comment_content)
+            comment = Comment(auction=target_listing, user=request.user,
+                              datetime=timezone.now(), content=comment_content)
             comment.save()
-            messages.success(request, "You have leave your comment successfully!")
+            messages.success(
+                request, "You have leave your comment successfully!")
 
     return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
-
