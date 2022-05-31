@@ -19,7 +19,7 @@
     <div class="container-fluid listing-container">
         {% for listing in all_active_listing %}   
         <div class="row mx-1 mb-3"> 
-            <img src="{% get_media_prefix %}{{ listing.image }}" class="col-sm-4 listing-image" alt="{{ listing.title }}">
+            <img src="{{ listing.image }}" class="col-sm-4 listing-image" alt="{{ listing.title }}">
             <div class="col-sm-8">
                 <h5 class="listing-title">{{ listing.title }}</h5>
                 <hr>
