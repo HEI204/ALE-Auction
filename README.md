@@ -8,6 +8,8 @@ This is the project 2 (Commerce) for CS50's Web which is a eBay-like e-commerce 
 - Models: Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. It’s up to you to decide what fields each model should have, and what the types of those fields should be. You may have additional models if you would like.
  
 - Create Listing: Users should be able to visit a page to create a new listing. They should be able to specify a title for the listing, a text-based description, and what the starting bid should be. Users should also optionally be able to provide a URL for an image for the listing and/or a category (e.g. Fashion, Toys, Electronics, Home, etc.).
+![image](https://user-images.githubusercontent.com/78290169/183333398-cd7ce02e-1dea-4f50-809b-751c5ce4b3d7.png)
+
  
 - Active Listings Page: The default route of your web application should let users view all of the currently active auction listings. For each active listing, this page should display (at minimum) the title, description, current price, and photo (if one exists for the listing).
 
