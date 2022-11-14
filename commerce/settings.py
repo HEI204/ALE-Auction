@@ -136,6 +136,10 @@ MEDIA_URL = '/media/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
+# Django CSRF
+CSRF_TRUSTED_ORIGINS = ['https://ale-auction-production.up.railway.app']
+
+
 # Configure Django App for Heroku.
 import django_heroku
 django_heroku.settings(locals())
