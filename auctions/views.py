@@ -1,4 +1,3 @@
-from email import message
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -30,9 +29,9 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            messages.error(
-                request, f"Invalid username and/or password.")
-            return render(request, "auctions/login.html")
+            return render(request, "auctions/login.html", {
+                "message": "Invalid username and/or password."
+            })
     else:
         return render(request, "auctions/login.html")
 
@@ -46,35 +45,23 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
-        
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-
-        if username == "":
-            messages.error(request, f"You need to type your username for registration.")
-            return render(request, "auctions/register.html")
-        elif email == "":
-            messages.error(request, f"You need to type your email address for registration.")
-            return render(request, "auctions/register.html")
-        elif password == "":
-            messages.error(request, f"You need to type your password for registration.")
-            return render(request, "auctions/register.html")
-        elif confirmation == "":
-            messages.error(request, f"You need to type your confirm password for registration.")
-            return render(request, "auctions/register.html")
 
         # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
         if password != confirmation:
-            messages.error(request, f"Passwords must match.")
-            return render(request, "auctions/register.html")
+            return render(request, "auctions/register.html", {
+                "message": "Passwords must match."
+            })
 
         # Attempt to create new user
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            messages.error(request, f"Username already taken.")
-            return render(request, "auctions/register.html")
+            return render(request, "auctions/register.html", {
+                "message": "Username already taken."
+            })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
@@ -85,8 +72,8 @@ def profile_view(request, username):
     user = User.objects.get(username=username)
     user_listing = Listing.objects.filter(owner=user)
     return render(request, "auctions/profile.html", {
-        "user": user,
-        "user_listing": user_listing
+        "user" : user,
+        "user_listing" : user_listing
     })
 
 
@@ -113,8 +100,7 @@ def edit_listing(request, listing_id):
     target_listing = Listing.objects.get(pk=listing_id)
 
     if (request.user == target_listing.owner):
-        form = ListingForm(request.POST, request.FILES,
-                           instance=target_listing)
+        form = ListingForm(request.POST, request.FILES, instance=target_listing)
         if request.method == "POST":
             if form.is_valid():
                 listing = form.save()
@@ -130,7 +116,7 @@ def edit_listing(request, listing_id):
         return render(request, "auctions/edit_listing.html", {
             "form": form
         })
-
+    
 
 # Show listing of the category requested by user
 # when the user type ...../categories/<categ>
@@ -173,11 +159,11 @@ def listing(request, listing_id):
 def make_bid(request, listing_id):
     if request.method == "POST":
         target_listing = Listing.objects.get(pk=listing_id)
-
+    
         # User must login first before make a bid
         if request.user.is_anonymous:
             messages.warning(
-                request, f"Sorry, you need to login your account first before make a bid", extra_tags='required_login')
+                request, f"Sorry, you need to login your account first before make a bid")
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
 
         # If user did not type anything
@@ -195,7 +181,7 @@ def make_bid(request, listing_id):
 
             target_listing.current_bid = new_bid
             target_listing.save()
-
+            
             messages.success(
                 request, f"Dear {request.user}, your bid is sucessfully made!")
             return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
@@ -209,12 +195,6 @@ def make_bid(request, listing_id):
 # User can add or remove the listing from their watchlist in listing page
 def edit_watchlist(request, listing_id):
     target_listing = Listing.objects.get(pk=listing_id)
-
-    # User must login first before add to the watchlist
-    if request.user.is_anonymous:
-        messages.warning(
-            request, f"Sorry, you need to login your account first before add to your watchlist", extra_tags='required_login')
-        return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
 
     if (request.user.is_watchers(target_listing)):
         target_listing.watchers.remove(request.user)
@@ -268,27 +248,18 @@ def listing_owner_setting(request, listing_id):
     return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
 
 # Every user can leave their comments to the listing and display on listing page
-
-
 def leave_comment(request, listing_id):
     if request.method == "POST":
         target_listing = Listing.objects.get(pk=listing_id)
 
-        if request.user.is_anonymous:
-            messages.warning(
-                request, f"Sorry, you need to login your account first before leave a comment", extra_tags='required_login')
-            return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
-
         comment_content = request.POST["comment-from-user"]
         if comment_content is None or comment_content == "":
-            messages.warning(
-                request, "You need to type something first before leave a comment!")
+            messages.warning(request, "You need to type something first before leave a comment!")
 
         else:
-            comment = Comment(auction=target_listing, user=request.user,
-                              datetime=timezone.now(), content=comment_content)
+            comment = Comment(auction=target_listing, user=request.user, datetime=timezone.now(), content=comment_content)
             comment.save()
-            messages.success(
-                request, "You have leave your comment successfully!")
+            messages.success(request, "You have leave your comment successfully!")
 
     return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
+

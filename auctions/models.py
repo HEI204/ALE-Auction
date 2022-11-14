@@ -31,10 +31,10 @@ class Category(models.Model):
 class Listing(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField(max_length=1000)
-    image = models.URLField(
-        max_length = 1000,
+    image = models.ImageField(
         blank=True,
         null=True,
+        upload_to='auctions/images'
     )
     category = models.ForeignKey(
         Category,
@@ -44,8 +44,8 @@ class Listing(models.Model):
         related_name="listings"
     )
     active = models.BooleanField(default=True)
-    condition_choices = [("","---------"), ("New", "Brand New"), ("Used once", "Used once"), ("Used", "Used")]
-    condition = models.CharField(max_length=9, choices=condition_choices, default='""')
+    condition_choices = [("New", "Brand New"), ("Used once", "Used once"), ("Used", "Used")]
+    condition = models.CharField(max_length=9, choices=condition_choices, default='New')
     start_datetime = models.DateTimeField(default=timezone.now())
     end_datetime = models.DateTimeField(blank=True, null=True)
     starting_bid = models.DecimalField(max_digits=7, decimal_places=2)

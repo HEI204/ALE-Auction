@@ -13,7 +13,7 @@
         <a href="{% url 'remove_from_watchlist' listing.id %}">
             <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
         </a>
-        <img src="{{ listing.image }}" class="col-sm-4 listing-image" alt="...">
+        <img src="{% get_media_prefix %}{{ listing.image }}" class="col-sm-4 listing-image" alt="...">
         <div class="col-sm-8">
             <h5 class="listing-title">{{ listing.title }}</h5>
             <hr>
