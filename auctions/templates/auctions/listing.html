@@ -170,7 +170,7 @@
                         <div class="col-md-10 col-xl-11">
                             <form class="leave-comment-form" action="{% url 'leave_comment' target_listing.id %}" method="post" class="mb-2">
                                 {% csrf_token %}
-                                {% if not comments %}
+                                {% if not target_listing.comments.all %}
                                 <textarea name="comment-from-user" rows="2" placeholder="Be the first to comment!"></textarea>
                                 {% else %}
                                 <textarea name="comment-from-user" rows="2" placeholder="Leave your comment if you like!"></textarea>
