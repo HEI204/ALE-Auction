@@ -196,6 +196,12 @@ def make_bid(request, listing_id):
 def edit_watchlist(request, listing_id):
     target_listing = Listing.objects.get(pk=listing_id)
 
+    # User must login first before add the listing to the watchlist
+    if request.user.is_anonymous:
+        messages.warning(
+            request, f"Sorry, you need to login your account first before add to your watchlist")
+        return HttpResponseRedirect(reverse("listing", kwargs={"listing_id": target_listing.id}))
+
     if (request.user.is_watchers(target_listing)):
         target_listing.watchers.remove(request.user)
     else:
